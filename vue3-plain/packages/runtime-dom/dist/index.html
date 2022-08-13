@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <div id="app"></div>
+  <div id="root"></div>
+  <div id="abc"></div>
+  <script src="./runtime-dom.global.js"></script>
+  <script>
+    const {
+      render, h, Text, Fragment, ref, toRefs,
+      reactive, onBeforeMount, onMounted, onBeforeUpdate,
+      onUpdated, openBlock:_openBlock, createElementBlock: _createElementBlock,
+      createElementVNode:_createElementVNode,toDisplayString:_toDisplayString,
+      inject, provide, getCurrentInstance, Teleport, defineAsyncComponent,
+      KeepAlive,
+    } = VueRuntimeDom
+
+    //=============diff算法====================
+    // render(h('h1', [
+    //   h('li', {key: 'a'}, 'a'),
+    //   h('li', {key: 'b'}, 'b'),
+    //   h('li', {key: 'c'}, 'c'),
+    //   h('li', {key: 'd'}, 'd'),
+    //   h('li', {key: 'e'}, 'e'),
+    //   h('li', {key: 'f'}, 'f'),
+    //   h('li', {key: 'g'}, 'g'),
+    // ]), app)
+    // // render(h(Text, 'hello'), app)
+    // setTimeout(() => {
+    //   render(h('h1', [
+    //     // h('li', {key: 'e'}, 'e'),
+    //     // h('li', {key: 'a'}, 'a'),
+    //     h('li', {key: 'a'}, 'a'),
+    //     h('li', {key: 'b'}, 'b'),
+    //     h('li', {key: 'e'}, 'e'),
+    //     h('li', {key: 'c'}, 'c'),
+    //     h('li', {key: 'd'}, 'd'),
+    //     h('li', {key: 'h'}, 'h'),
+    //     h('li', {key: 'f'}, 'f'),
+    //     h('li', {key: 'g'}, 'g'),
+    //   ]), app)
+    // }, 2000)
+
+    // =================渲染组件=======================
+    // const VueComponent = {
+    //   data() {
+    //     return {
+    //       name: 'yinyishuai yiyiai',
+    //       age: 1
+    //     }
+    //   },
+    //   render() {
+    //     setTimeout(() => {
+    //       this.name += '1'
+    //       this.name += '1'
+    //       // this.name += '1'
+    //     }, 1000);
+    //     return h('h1', `我的名叫${this.name}`)
+    //   }
+    // }
+    // render(h(VueComponent), app)
+
+    // =========================传递属性======================
+    // const VueComponent = {
+    //   props: {
+    //     address: '' // 校验属性类型
+    //   },
+    //   render() {
+    //     return h('p', this.address + this.$attrs.a)
+    //   }
+    // }
+   
+    // render(h(VueComponent, { address: '地址信息', a: '1', b: '2'}), app)
+
+    // =========================组件属性更新===========================
+    // const MyComponent = {
+    //   props: {
+    //     address: String
+    //   },
+    //   render() {
+    //     return h(Text, this.address)
+    //   }
+    // }
+    // const VueComponent = {
+    //   data() {
+    //     return {
+    //       flag: false,
+    //     }
+    //   },
+    //   render() {
+    //     return h(Fragment, [
+    //       h('button', { onClick: () =>  this.flag = !this.flag }, '切换'),
+    //       h(MyComponent, { address: this.flag ? '地球' : '月球 '})
+    //     ])
+    //   }
+    // }
+
+    // render(h(VueComponent), app)
+
+    // ==================setup============================
+    // setup返回对象
+    // const VueComponent = {
+    //   setup() {
+    //     const name = ref('yys')
+    //     setTimeout(() => {
+    //       name.value = '123'
+    //     }, 1000)
+    //     return {
+    //       name
+    //     }
+    //   },
+    //   render() {
+    //     return h('p', this.name)
+    //   }
+    // }
+    // setup返回render函数
+    // const VueComponent = {
+    //   setup() {
+    //     const name = ref('yys')
+    //     setTimeout(() => {
+    //       name.value = '123'
+    //     }, 1000)
+    //     return () => {
+    //       return h('p', name.value)
+    //     }
+    //   }
+    // }
+    // render(h(VueComponent), app)
+
+    //=======================事件=================================
+    // const VueComponent = {
+    //   setup(props, ctx) {
+    //     return () => {
+    //       return h('p', { onClick: () => ctx.emit('xxx', 'hello')}, ['test'])
+    //     }
+    //   }
+    // }
+    // render(h(VueComponent, { onXxx: (val) => alert(val)}), app)
+
+    //=============================插槽========================
+    // const MyComponent = {
+    //   render() {
+    //     return h(Fragment, [
+    //       h('div', this.$slots.header()),
+    //       h('div', this.$slots.footer()),
+    //     ])
+    //   }
+    // }
+    // const VueComponent = {
+    //   render() {
+    //     return h(MyComponent, null, {
+    //       header: () => h('p', 'header'),
+    //       footer: () => h('p', 'footer'),
+    //     })
+    //   }
+    // }
+    // render(h(VueComponent), app)
+
+    //=====================生命周期======================
+    // const useCounter = () => {
+    //   const state = reactive({ count: 1})
+    //   const handleClick = () => {
+    //     state.count++
+    //   }
+    //   onBeforeMount(() => console.log('onBeforeMount'))
+    //   onMounted(() => console.log('onMounted'))
+    //   onBeforeUpdate(() => console.log('onBeforeUpdate'))
+    //   onUpdated(() => console.log('onUpdated'))
+    //   return {state, handleClick}
+    // }
+    // const VueComponent = {
+    //   setup() {
+    //     const { state: counter, handleClick } = useCounter()
+    //     return {
+    //       ...toRefs(counter),
+    //       handleClick,
+    //     }
+    //   },
+    //   render() {
+    //     console.log('render')
+    //     return h('p', { onClick: () => this.handleClick()}, this.count)
+    //   }
+    // }
+    // render(h(VueComponent), app)
+
+
+
+    // =========================靶向更新==========================
+      // const VueComponent = {
+      //   setup() {
+      //     setTimeout(() => {
+      //       state.name = 'apple'
+      //     }, 1000)
+      //     const state = reactive({ name: 'yys'})
+      //     return {
+      //       state
+      //     }
+      //   },
+      //   render(ctx) {
+      //     let vnode = (_openBlock(), _createElementBlock('div', null, [
+      //       _createElementVNode('h1', null, 'Hello'),
+      //       _createElementVNode('span', null, _toDisplayString(ctx.state.name), 1)
+      //     ]))
+      //     console.log(vnode);
+      //     return vnode
+      //   }
+      // }
+      // render(h(VueComponent), app)
+
+    // =================provide inject===============
+    // const My3 = {
+    //   setup() {
+    //     const state = inject('VueComponent')
+    //     return { state }
+    //   },
+    //   render() {
+    //     return h('h1', this.state.name)
+    //   }
+    // }
+    // const My2 = {
+    //   setup() {
+    //     const state = reactive({ abc: 'yys' })
+    //     provide('ProvideName', state)
+    //   },
+    //   render() {
+    //     return h(My3)
+    //   }
+    // }
+    // const My = {
+    //   setup() {
+    //     const state = reactive({ name: 'yys' })
+    //     provide('VueComponent', state)
+    //     setTimeout(() => {
+    //       state.name = '123'
+    //     }, 1000)
+    //   },
+    //   render() {
+    //     return h(My2)
+    //   }
+    // }
+    // const VueComponent = {
+    //   name: 'parent',
+    //   setup() {
+    //     // const state = reactive({ name: 'yys' })
+    //     // provide('VueComponent', state)
+    //     // setTimeout(() => {
+    //     //   state.name = '123'
+    //     // }, 1000)
+    //   },
+    //   render() {
+    //     return h(My)
+    //   }
+    // }
+    // render(h(VueComponent), app)
+
+    //=====================teleport========================
+    // const VueComponent = {
+    //   setup() {
+    //       const flag = ref(true)
+    //       const handleClick = () => flag.value = false
+    //       return {
+    //         flag,
+    //         handleClick
+    //       }
+    //   },
+    //   render() {
+    //     // return h('div', h(Teleport, { to: '#root'}, [1, 2]))
+    //     return h('button', { onClick: this.handleClick }, this.flag
+    //       ? h(Teleport, { to: '#root'}, [h(Text, '12')])
+    //       : h(Teleport, { to: '#abc'}, [h(Text, '34')])
+    //     )
+    //   }
+    // }
+    // render(h(VueComponent), app)
+
+    // ===================defineAsyncComponent======================
+      // const My = {
+      //   render() {
+      //     return h('h1', 'hello world')
+      //   }
+      // }
+
+      // const ErrorComp = {
+      //   render() {
+      //     return h('a', '组件超时')
+      //   }
+      // }
+
+      // const loadingComp = {
+      //   render() {
+      //     return h('h1', 'loading...')
+      //   }
+      // }
+
+      // // const asyncComp = defineAsyncComponent(() => {
+      // //   return new Promise((resolve, reject) => {
+      // //     setTimeout(() => {
+      // //       resolve(My)
+      // //     }, 2000)
+      // //   })
+      // // })
+      // let a = false
+      // const asyncComp = defineAsyncComponent({
+      //   loader: () => {
+      //     return new Promise((resolve, reject) => {
+      //       setTimeout(() => {
+      //         if (!a) {
+      //           a = true
+      //           reject(My)
+      //         } else {
+      //           resolve(My)
+      //         }
+      //       }, 3000)
+      //     })
+      //   },
+      //   // timeout: 2000,
+      //   // delay: 1000,
+      //   loadingComponent: loadingComp,
+      //   errorComponent: ErrorComp,
+      //   onError(err, retry, fail) {
+      //     console.log('加载失败重试');
+      //     retry()
+      //   }
+      // })
+
+      // render(h(asyncComp), app)
+
+    // =====================functional component==========================
+    // let funcComp = (props) => {
+    //   return h('div', props.name)
+    // }
+    // render(h(funcComp, { name: 'test'}), app)
+
+    // ========================keep-alive==================
+    const My1 = {
+      setup() {
+        onMounted(() => {
+          console.log('my1 mounted')
+        })
+      },
+      render: () => h('h1', 'my1')
+    }
+    const My2 = {
+      setup() {
+        onMounted(() => {
+          console.log('my2 mounted')
+        })
+      },
+      render: () => h('h1', 'my2')
+    }
+    render(
+      h(KeepAlive, null, { default: () => h(My1) }), app
+    )
+
+    setTimeout(() => {
+      render(h(KeepAlive, null, { default: () => h(My2) }), app)
+    }, 1000)
+
+    setTimeout(() => {
+      render(h(KeepAlive, null, { default: () => h(My1) }), app)
+    }, 2000)
+  </script>
+</body>
+</html>
