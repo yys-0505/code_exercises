@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <script src="./vue.js"></script>
+  <script type="module">
+    import VueRouter from './index.js';
+    Vue.use(VueRouter);
+    const Foo = { template: '<div>foo</div>' }
+    const Bar = { template: `<div>bar 
+      <a href="#/bar/a">bara</a>
+      <a href="#/bar/b">barb</a>
+      <router-view></router-view>
+    </div>` }
+    const Bara = { template: '<div>bar a</div>' }
+    const Barb = { template: '<div>bar b</div>' }
+    const routes = [
+      {
+        path: '/foo', component: Foo
+      },
+      {
+        path: '/bar', component: Bar, 
+        children: [
+          { path: 'a', component: Bara },
+          { path: 'b', component: Barb },
+        ]
+      }
+    ]
+    const router = new VueRouter({
+      routes
+    })
+    window.app = new Vue({
+      router
+    }).$mount('#app')
+  </script>
+</head>
+<body>
+  <div id="app">
+    <h1>Hello App!</h1>
+    <p>
+      <!-- <router-link to="/foo">Go to Foo</router-link> -->
+      <!-- <router-link to="/bar">Go to Bar</router-link> -->
+    </p>
+    <a href="#/foo">foo</a>
+    <a href="#/bar">bar</a>
+    <router-view></router-view>
+  </div>
+</body>
+</html>
