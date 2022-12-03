@@ -12,7 +12,7 @@
 @mixin b($block) {
     $B: $namespace + '-' + $block;
     .#{$B} {
-      @content;
+      @content; // 会获取include{}中传递过来的所有内容(是{ }，而不是（）)
     }
 }
 
