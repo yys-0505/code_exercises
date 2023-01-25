@@ -1,0 +1,50 @@
+@import './common/var.scss'; // 变量
+@import './mixins/mixin.scss'; // 方法
+
+@include b(button) {
+  display: inline-block;
+  line-height: 1;
+  min-height: 40px;
+  white-space: nowrap;
+  cursor: pointer;
+  outline: none;
+  padding: 0 15px;
+  background: rgb(219, 201, 201);
+  vertical-align: middle;
+  border: rgb(219, 201, 201);
+  border-radius: 5px;
+  // 嵌套样式
+  & [class*='#{$namespace}-icon-'] { // *表包含
+    vertical-align: middle;
+    & + span {
+      margin-left: 5px;
+    }
+  }
+  // 状态
+  @include when(disabled) {
+    cursor: not-allowed;
+  }
+  @include when(round) {
+    border-radius: 20px;
+  }
+  @include when(loading) {
+    pointer-events: none;
+  }
+  // button组件的样式
+  @include m(primary) {
+    @include button-type($--color-white, $--color-primary, $--color-primary);
+    // &:hover,
+    // &:focus {
+    //   color: red;
+    // }
+  }
+  @include m(success) {
+    @include button-type($--color-white, $--color-success, $--color-success)
+  }
+  @include m(danger) {
+    @include button-type($--color-white, $--color-danger, $--color-danger)
+  }
+  @include m(info) {
+    @include button-type($--color-white, $--color-info, $--color-info)
+  }
+}

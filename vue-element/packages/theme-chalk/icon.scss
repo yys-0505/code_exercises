@@ -1,0 +1,35 @@
+@import './common/var.scss';
+@import './mixins/mixin.scss';
+
+@font-face {
+  font-family: "x-ui-icons"; /* Project id 3868942 */
+  src: url('./fonts/iconfont.woff2') format('woff2'),
+       url('./fonts/iconfont.woff') format('woff'),
+       url('./fonts/iconfont.ttf') format('truetype');
+}
+// i class="x-ui-icons x-icon-ico_med_service"
+// 用了x-icon 自动地添加前缀 x-ui-icons
+// .x-ui-icons {
+//   font-family: "x-ui-icons" !important;
+//   font-size: 16px;
+//   font-style: normal;
+//   -webkit-font-smoothing: antialiased;
+//   -moz-osx-font-smoothing: grayscale;
+// }
+
+[class^='#{$namespace}-icon-'] {
+  font-family: "x-ui-icons" !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.x-icon-ico_opt_circle_add:before {
+  content: "\e602";
+}
+
+.x-icon-ico_med_service:before {
+  content: "\e603";
+}
+

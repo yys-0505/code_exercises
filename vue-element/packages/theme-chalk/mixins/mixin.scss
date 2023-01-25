@@ -1,0 +1,48 @@
+@import "../common/var.scss";
+
+// 使用： @include b(button) {style} , 最终转换成: .x-button{style}
+@mixin b($block) {
+  $B: $namespace + '-' + $block; // x-button
+  .#{$B} {
+    @content; // 会获取include{}中传递过来的所有内容(是{ }，而不是（）)
+  }
+}
+
+// .x-button.is-xxx
+// @include b(button) {
+//   @include when() {
+
+//   }
+// }
+@mixin when($state) {
+  @at-root { // .x-button
+    &.#{$state-prefix + $state} {
+      @content;
+    }
+  }
+}
+
+// &--primary: .x-button--primary
+@mixin m($modifier) {
+  @at-root {
+    #{& + $modifier-separator + $modifier} {
+      @content;
+    }
+  }
+}
+
+// &__header: .x-button__header
+@mixin e($element) {
+  @at-root {
+    #{& + $element-separator + $element} {
+      @content;
+    }
+  }
+}
+
+// 处理button-type
+@mixin button-type($color, $border-color, $background) {
+  color: $color;
+  border-color: $border-color;
+  background: $background;
+}

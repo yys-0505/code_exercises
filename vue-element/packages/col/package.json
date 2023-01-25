@@ -1,0 +1,26 @@
+{
+  "name": "@x-ui/col",
+  "version": "0.0.0",
+  "description": "> TODO: description",
+  "author": "yishuai.yin@accenture.com <yishuai.yin@accenture.com>",
+  "homepage": "https://github.com/yys-0505/code_exercises#readme",
+  "license": "ISC",
+  "main": "lib/col.js",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "files": [
+    "lib"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yys-0505/code_exercises.git"
+  },
+  "scripts": {
+    "test": "node ./__tests__/col.test.js"
+  },
+  "bugs": {
+    "url": "https://github.com/yys-0505/code_exercises/issues"
+  }
+}
